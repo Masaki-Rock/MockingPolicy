@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http-policy="http://www.mulesoft.org/schema/mule/http-policy"
+      xmlns:http-transform="http://www.mulesoft.org/schema/mule/http-policy-transform"
+      xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+               http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+               http://www.mulesoft.org/schema/mule/http-policy http://www.mulesoft.org/schema/mule/http-policy/current/mule-http-policy.xsd
+               http://www.mulesoft.org/schema/mule/http-policy-transform http://www.mulesoft.org/schema/mule/http-policy-transform/current/mule-http-policy-transform.xsd">
+
+    <http-policy:proxy name="{{{policyId}}}-custom-policy">
+        <set-variable value="{{{executeflg}}}" doc:name="Set Flg" variableName="flg"/>
+        <http-policy:source>
+            {{#if evaluateInRequesterRequest}}
+            <choice doc:name="requesterRequestChoice" >
+                <when expression="vars.flag">
+                    <http-transform:set-requester-request>
+                        {{#if (listenerRequestBody != null && listenerRequestBody != '')}}
+                        <http-transform:body>{{{listenerRequestBody}}}</http-transform:body>
+                        {{/if}}
+                        {{#if (listenerRequestHeaders != null && listenerRequestHeaders != '')}}
+                        <http-transform:headers>{{{listenerRequestHeaders}}}</http-transform:headers>
+                        {{/if}}
+                        {{#if (listenerRequestURIParams != null && listenerRequestURIParams != '')}}
+                        <http-transform:uri-params>{{{listenerRequestURIParams}}}</http-transform:uri-params>
+                        {{/if}}
+                        {{#if (listenerRequestQueryParams != null && listenerRequestQueryParams != '')}}
+                        <http-transform:query-params>{{{listenerRequestQueryParams}}}</http-transform:query-params>
+                        {{/if}}
+                    </http-transform:set-requester-request>
+                </when>
+            </choice>
+            {{/if}}
+            <http-policy:execute-next/>
+            {{#if evaluateInRequesterResponse}}
+            <choice doc:name="requesterResponseChoice" >
+                <when expression="vars.flag">
+                    <http-transform:set-response statusCode="{{{listenerResponseStatusCode}}}">
+                        {{#if (listenerResponseBody != null && listenerResponseBody != '')}}
+                        <http-transform:body>{{{listenerResponseBody}}}</http-transform:body>
+                        {{/if}}
+                        {{#if (listenerResponseHeaders != null && listenerResponseHeaders != '')}}
+                        <http-transform:headers>{{{listenerResponseHeaders}}}</http-transform:headers>
+                        {{/if}}
+                    </http-transform:set-response>
+                </when>
+            </choice>
+            {{/if}}
+        </http-policy:source>
+        <http-policy:operation>
+            {{#if evaluateInRequesterRequest}}
+            <choice doc:name="requesterRequestChoice" >
+                <when expression="vars.flag">
+                    <http-transform:set-requester-request>
+                        {{#if (requesterRequestBody != null && requesterRequestBody != '')}}
+                        <http-transform:body>{{{requesterRequestBody}}}</http-transform:body>
+                        {{/if}}
+                        {{#if (requesterRequestHeaders != null && requesterRequestHeaders != '')}}
+                        <http-transform:headers>{{{requesterRequestHeaders}}}</http-transform:headers>
+                        {{/if}}
+                        {{#if (requesterRequestURIParams != null && requesterRequestURIParams != '')}}
+                        <http-transform:uri-params>{{{requesterRequestURIParams}}}</http-transform:uri-params>
+                        {{/if}}
+                        {{#if (requesterRequestQueryParams != null && requesterRequestQueryParams != '')}}
+                        <http-transform:query-params>{{{requesterRequestQueryParams}}}</http-transform:query-params>
+                        {{/if}}
+                    </http-transform:set-requester-request>
+                </when>
+            </choice>
+            {{/if}}
+            <http-policy:execute-next/>
+            {{#if evaluateInRequesterResponse}}
+            <choice doc:name="requesterResponseChoice" >
+                <when expression="vars.flag">
+                    <http-transform:set-response statusCode="{{{requesterResponseStatusCode}}}">
+                        {{#if (requesterResponseBody != null && requesterResponseBody != '')}}
+                        <http-transform:body>{{{requesterResponseBody}}}</http-transform:body>
+                        {{/if}}
+                        {{#if (requesterResponseHeaders != null && requesterResponseHeaders != '')}}
+                        <http-transform:headers>{{{requesterResponseHeaders}}}</http-transform:headers>
+                        {{/if}}
+                    </http-transform:set-response>
+                </when>
+            </choice>
+            {{/if}}
+        </http-policy:operation>
+    </http-policy:proxy>
+</mule> 

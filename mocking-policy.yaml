@@ -1,0 +1,160 @@
+id: mocking-policy
+name: Mocking Policy
+description: ドライバーやモック機能を提供する
+category: Troubleshooting
+type: custom
+resourceLevelSupported: true
+encryptionSupported: false
+standalone: true
+requiredCharacteristics: []
+providedCharacteristics: []
+configuration: 
+   - propertyName: evaluateInListenerRequest
+     name: リクエスト受信時のリクエスト上書き設定
+     description: リクエスト受信時にリクエストを上書きする場合はチェックする。
+     type: boolean
+     optional: true
+     defaultValue: false
+   - propertyName: listenerRequestBody
+     name: リクエスト受信時のリクエストボディー
+     description: リクエスト受信時のリクエストボディーを設定する。
+     type: expression
+     optional: true
+     sensitive: false
+     allowMultiple: false
+     dependsOnKey: evaluateInListenerRequest
+     dependsOnValue: true
+   - propertyName: listenerRequestHeaders
+     name: リクエスト受信時のリクエストヘッダー
+     description: リクエスト受信時のリクエストヘッダーを設定する。
+     type: expression
+     optional: true
+     sensitive: false
+     allowMultiple: false
+     dependsOnKey: evaluateInListenerRequest
+     dependsOnValue: true
+   - propertyName: listenerRequestURIParams
+     name: リクエスト受信時のURIパラメータ
+     description: リクエスト受信時のURIパラメータを設定する。
+     type: expression
+     optional: true
+     sensitive: false
+     allowMultiple: false
+     dependsOnKey: evaluateInListenerRequest
+     dependsOnValue: true
+   - propertyName: listenerRequestQueryParams
+     name: リクエスト受信時のクエリパラメータ
+     description: リクエスト受信時のクエリパラメータを設定する。
+     type: expression
+     optional: true
+     sensitive: false
+     allowMultiple: false
+     dependsOnKey: evaluateInListenerRequest
+     dependsOnValue: true
+   - propertyName: evaluateInListenerResponse
+     name: レスポンス返却時のレスポンス上書き設定
+     description: レスポンス返却時にレスポンスを上書きする場合はチェックする。
+     type: boolean
+     optional: true
+     defaultValue: false
+   - propertyName: listenerResponseBody
+     name: レスポンス返却時のレスポンスボディー
+     description: レスポンス返却時のレスポンスボディーを設定する。
+     type: expression
+     optional: true
+     sensitive: false
+     allowMultiple: false
+     dependsOnKey: evaluateInListenerResponse
+     dependsOnValue: true
+   - propertyName: listenerResponseHeaders
+     name: レスポンス返却時のレスポンスヘッダー
+     description: レスポンス返却時のレスポンスヘッダーを設定する。
+     type: expression
+     optional: true
+     sensitive: false
+     allowMultiple: false
+     dependsOnKey: evaluateInListenerResponse
+     dependsOnValue: true
+   - propertyName: evaluateInRequesterRequest
+     name: HTTPリクエスターのリクエスト上書き設定
+     description: HTTPリクエスターのリクエストを上書きする場合はチェックする。
+     type: boolean
+     optional: true
+     defaultValue: false
+   - propertyName: requesterRequestBody
+     name: HTTPリクエスターのリクエストボディー
+     description: HTTPリクエスターのリクエストボディーを設定する。
+     type: expression
+     optional: true
+     sensitive: false
+     allowMultiple: false
+     dependsOnKey: evaluateInRequesterRequest
+     dependsOnValue: true
+   - propertyName: requesterRequestHeaders
+     name: HTTPリクエスターのリクエストヘッダー
+     description: HTTPリクエスターのリクエストヘッダーを設定する。
+     type: expression
+     optional: true
+     sensitive: false
+     allowMultiple: false
+     dependsOnKey: evaluateInRequesterRequest
+     dependsOnValue: true
+   - propertyName: requesterRequestURIParams
+     name: HTTPリクエスターのURIパラメータ
+     description: HTTPリクエスターのURIパラメータを設定する。
+     type: expression
+     optional: true
+     sensitive: false
+     allowMultiple: false
+     dependsOnKey: evaluateInRequesterRequest
+     dependsOnValue: true
+   - propertyName: requesterRequestQueryParams
+     name: HTTPリクエスターのクエリパラメータ
+     description: HTTPリクエスターのクエリパラメータを設定する。
+     type: expression
+     optional: true
+     sensitive: false
+     allowMultiple: false
+     dependsOnKey: evaluateInRequesterRequest
+     dependsOnValue: true
+   - propertyName: evaluateInRequesterResponse
+     name: HTTPリクエスターのレスポンス上書き設定
+     description: HTTPリクエスターのレスポンスを上書きする場合はチェックする。
+     type: boolean
+     optional: true
+     defaultValue: false
+   - propertyName: requesterResponseStatusCode
+     name: HTTPリクエスターのレスポンスステータスコード
+     description: HTTPリクエスターのレスポンスステータスコードを設定する。
+     type: string
+     optional: true
+     sensitive: false
+     allowMultiple: false
+     dependsOnKey: evaluateInRequesterResponse
+     dependsOnValue: true
+   - propertyName: requesterResponseBody
+     name: HTTPリクエスターのレスポンスボディー
+     description: HTTPリクエスターのレスポンスボディーを設定する。
+     type: expression
+     optional: true
+     sensitive: false
+     allowMultiple: false
+     dependsOnKey: evaluateInRequesterResponse
+     dependsOnValue: true
+   - propertyName: requesterResponseHeaders
+     name: HTTPリクエスターのレスポンスヘッダー
+     description: HTTPリクエスターのレスポンスヘッダーを設定する。
+     type: expression
+     optional: true
+     sensitive: false
+     allowMultiple: false
+     dependsOnKey: evaluateInRequesterResponse
+     dependsOnValue: true
+   - propertyName: executeflg
+     name: 実行フラグ
+     description: リクエストやレスポンスを実行するフラグ。
+     type: expression
+     optional: false
+     sensitive: false
+     allowMultiple: false
+     defaultValue: "#[((random() * 100) mod 2) < 1]"
