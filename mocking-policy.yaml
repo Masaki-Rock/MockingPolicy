@@ -10,36 +10,29 @@ requiredCharacteristics: []
 providedCharacteristics: []
 configuration: 
    - propertyName: evaluateInListenerRequest
-     name: リクエスト受信時のリクエスト上書き設定
+     name: リクエスト受信時のリクエスト上書き設定（非推奨）
      description: リクエスト受信時にリクエストを上書きする場合はチェックする。
      type: boolean
      optional: true
      defaultValue: false
-   - propertyName: listenerRequestBody
-     name: リクエスト受信時のリクエストボディー
-     description: リクエスト受信時のリクエストボディーを設定する。
+   - propertyName: listenerRequestPath
+     name: リクエスト受信時のリクエストパス
+     description: リクエスト受信時のリクエストパスを設定する。
      type: expression
      optional: true
      sensitive: false
      allowMultiple: false
-     dependsOnKey: evaluateInListenerRequest
-     dependsOnValue: true
-   - propertyName: listenerRequestHeaders
-     name: リクエスト受信時のリクエストヘッダー
-     description: リクエスト受信時のリクエストヘッダーを設定する。
-     type: expression
-     optional: true
-     sensitive: false
-     allowMultiple: false
+     defaultValue: "#['/{ListenerURIParameter}']"
      dependsOnKey: evaluateInListenerRequest
      dependsOnValue: true
    - propertyName: listenerRequestURIParams
-     name: リクエスト受信時のURIパラメータ
-     description: リクエスト受信時のURIパラメータを設定する。
+     name: リクエスト受信時ののURIパラメータ
+     description: リクエスト受信時ののURIパラメータを設定する。
      type: expression
      optional: true
      sensitive: false
      allowMultiple: false
+     defaultValue: "#[{ 'ListenerURIParameter' : 'Add-in-the-policy'}]"
      dependsOnKey: evaluateInListenerRequest
      dependsOnValue: true
    - propertyName: listenerRequestQueryParams
@@ -49,6 +42,37 @@ configuration:
      optional: true
      sensitive: false
      allowMultiple: false
+     defaultValue: "#[{ 'ListenerQueryParameter' : 'Add-in-the-policy'}]"
+     dependsOnKey: evaluateInListenerRequest
+     dependsOnValue: true
+   - propertyName: listenerRequestHeaders
+     name: リクエスト受信時のリクエストヘッダー
+     description: リクエスト受信時のリクエストヘッダーを設定する。
+     type: expression
+     optional: true
+     sensitive: false
+     allowMultiple: false
+     defaultValue: "#[%dw 2.0 output application/json --- attributes.headers ++ { 'ListenerRequestHeader' : 'Add in the policy of the listner'}]"
+     dependsOnKey: evaluateInListenerRequest
+     dependsOnValue: true
+   - propertyName: listenerRequestBody
+     name: リクエスト受信時のリクエストボディー
+     description: リクエスト受信時のリクエストボディーを設定する。
+     type: expression
+     optional: true
+     sensitive: false
+     defaultValue: "#[%dw 2.0 output application/json --- { 'RequestBody' : 'Add in the policy of the listner'}]"
+     allowMultiple: false
+     dependsOnKey: evaluateInListenerRequest
+     dependsOnValue: true
+   - propertyName: setBeforeListnerPayload
+     name: リクエスト受信時のペイロード
+     description: リクエスト受信時のペイロードを設定する。
+     type: expression
+     optional: true
+     sensitive: false
+     allowMultiple: false
+     defaultValue: "#[%dw 2.0 output application/json --- attributes.maskedRequestPath = '/']"
      dependsOnKey: evaluateInListenerRequest
      dependsOnValue: true
    - propertyName: evaluateInListenerResponse
@@ -57,13 +81,24 @@ configuration:
      type: boolean
      optional: true
      defaultValue: false
-   - propertyName: listenerResponseBody
-     name: レスポンス返却時のレスポンスボディー
-     description: レスポンス返却時のレスポンスボディーを設定する。
-     type: expression
+   - propertyName: listenerResponseStatusCode
+     name: レスポンス返却時のレスポンスステータスコード
+     description: レスポンス返却時のレスポンスステータスコードを設定する。
+     type: string
      optional: true
      sensitive: false
      allowMultiple: false
+     defaultValue: "200"
+     dependsOnKey: evaluateInListenerResponse
+     dependsOnValue: true
+   - propertyName: listenerResponseReasonPhrase
+     name: レスポンス返却時のレスポンスリーズンフレーズ
+     description: HTTPリクエスターのレスポンスーズンフレーズを設定する。
+     type: string
+     optional: true
+     sensitive: false
+     allowMultiple: false
+     defaultValue: "chang Status in the policy"
      dependsOnKey: evaluateInListenerResponse
      dependsOnValue: true
    - propertyName: listenerResponseHeaders
@@ -73,6 +108,17 @@ configuration:
      optional: true
      sensitive: false
      allowMultiple: false
+     defaultValue: "#[%dw 2.0 output application/json --- attributes.headers ++ { 'ListenerResponseHeaders' : 'Add in the policy of the listner'}]"
+     dependsOnKey: evaluateInListenerResponse
+     dependsOnValue: true
+   - propertyName: listenerResponseBody
+     name: レスポンス返却時のレスポンスボディー
+     description: レスポンス返却時のレスポンスボディーを設定する。
+     type: expression
+     optional: true
+     sensitive: false
+     allowMultiple: false
+     defaultValue: "#[%dw 2.0 output application/json --- { 'ResponseBody' : 'Add in the policy of the listner'}]"
      dependsOnKey: evaluateInListenerResponse
      dependsOnValue: true
    - propertyName: evaluateInRequesterRequest
@@ -81,22 +127,14 @@ configuration:
      type: boolean
      optional: true
      defaultValue: false
-   - propertyName: requesterRequestBody
-     name: HTTPリクエスターのリクエストボディー
-     description: HTTPリクエスターのリクエストボディーを設定する。
+   - propertyName: requesterRequestPath
+     name: HTTPリクエスターのリクエスト送信時のリクエストパス
+     description: HTTPリクエスターのリクエスト送信時のリクエストパスを設定する。
      type: expression
      optional: true
      sensitive: false
      allowMultiple: false
-     dependsOnKey: evaluateInRequesterRequest
-     dependsOnValue: true
-   - propertyName: requesterRequestHeaders
-     name: HTTPリクエスターのリクエストヘッダー
-     description: HTTPリクエスターのリクエストヘッダーを設定する。
-     type: expression
-     optional: true
-     sensitive: false
-     allowMultiple: false
+     defaultValue: "#['/{RequesterURIParameter}']"
      dependsOnKey: evaluateInRequesterRequest
      dependsOnValue: true
    - propertyName: requesterRequestURIParams
@@ -106,6 +144,7 @@ configuration:
      optional: true
      sensitive: false
      allowMultiple: false
+     defaultValue: "#[{ 'RequesterURIParameter' : 'Add-in-the-policy'}]"
      dependsOnKey: evaluateInRequesterRequest
      dependsOnValue: true
    - propertyName: requesterRequestQueryParams
@@ -115,6 +154,27 @@ configuration:
      optional: true
      sensitive: false
      allowMultiple: false
+     defaultValue: "#[{ 'RequesterQueryParameter' : 'Add-in-the-policy'}]"
+     dependsOnKey: evaluateInRequesterRequest
+     dependsOnValue: true
+   - propertyName: requesterRequestHeaders
+     name: HTTPリクエスターのリクエストヘッダー
+     description: HTTPリクエスターのリクエストヘッダーを設定する。
+     type: expression
+     optional: true
+     sensitive: false
+     allowMultiple: false
+     defaultValue: "#[%dw 2.0 output application/json --- attributes.headers ++ { 'RequesterRequestHeader' : 'Add in the policy of the requester'}]"
+     dependsOnKey: evaluateInRequesterRequest
+     dependsOnValue: true
+   - propertyName: requesterRequestBody
+     name: HTTPリクエスターのリクエストボディー
+     description: HTTPリクエスターのリクエストボディーを設定する。
+     type: expression
+     optional: true
+     sensitive: false
+     allowMultiple: false
+     defaultValue: "#[%dw 2.0 output application/json --- { 'RequestBody' : 'Add in the policy of the requester'}]"
      dependsOnKey: evaluateInRequesterRequest
      dependsOnValue: true
    - propertyName: evaluateInRequesterResponse
@@ -130,15 +190,17 @@ configuration:
      optional: true
      sensitive: false
      allowMultiple: false
+     defaultValue: "200"
      dependsOnKey: evaluateInRequesterResponse
      dependsOnValue: true
-   - propertyName: requesterResponseBody
-     name: HTTPリクエスターのレスポンスボディー
-     description: HTTPリクエスターのレスポンスボディーを設定する。
-     type: expression
+   - propertyName: requesterResponseReasonPhrase
+     name: HTTPリクエスターのレスポンスリーズンフレーズ
+     description: HTTPリクエスターのレスポンスーズンフレーズを設定する。
+     type: string
      optional: true
      sensitive: false
      allowMultiple: false
+     defaultValue: "chang Status in the policy"
      dependsOnKey: evaluateInRequesterResponse
      dependsOnValue: true
    - propertyName: requesterResponseHeaders
@@ -148,6 +210,17 @@ configuration:
      optional: true
      sensitive: false
      allowMultiple: false
+     defaultValue: "#[%dw 2.0 output application/json --- attributes.headers ++ { 'RequesterResponseHeader' : 'Add in the policy of the requester'}]"
+     dependsOnKey: evaluateInRequesterResponse
+     dependsOnValue: true
+   - propertyName: requesterResponseBody
+     name: HTTPリクエスターのレスポンスボディー
+     description: HTTPリクエスターのレスポンスボディーを設定する。
+     type: expression
+     optional: true
+     sensitive: false
+     allowMultiple: false
+     defaultValue: "#[%dw 2.0 output application/json --- { 'ResponseBody' : 'Add in the policy of the requester'}]"
      dependsOnKey: evaluateInRequesterResponse
      dependsOnValue: true
    - propertyName: executeflg
@@ -158,3 +231,11 @@ configuration:
      sensitive: false
      allowMultiple: false
      defaultValue: "#[((random() * 100) mod 2) < 1]"
+   - propertyName: debugLogExpression
+     name: デバッグログ
+     description: デバックログ式を設定する。
+     type: expression
+     optional: true
+     sensitive: false
+     allowMultiple: false
+     defaultValue: "#[payload]"

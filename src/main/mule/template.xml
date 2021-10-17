@@ -13,80 +13,61 @@
                http://www.mulesoft.org/schema/mule/http-policy-transform http://www.mulesoft.org/schema/mule/http-policy-transform/current/mule-http-policy-transform.xsd">
 
     <http-policy:proxy name="{{{policyId}}}-custom-policy">
-        <set-variable value="{{{executeflg}}}" doc:name="Set Flg" variableName="flg"/>
-        <http-policy:source>
-            {{#if evaluateInRequesterRequest}}
-            <choice doc:name="requesterRequestChoice" >
-                <when expression="vars.flag">
-                    <http-transform:set-requester-request>
-                        {{#if (listenerRequestBody != null && listenerRequestBody != '')}}
+        <http-policy:source propagateMessageTransformations="{{{evaluateInListenerRequest}}}">
+            <set-variable value="{{{executeflg}}}" doc:name="Set Flg" variableName="flg"/>
+            {{#if evaluateInListenerRequest}}
+            <choice>
+                <when expression="#[vars.flg]">
+                    <http-transform:set-requester-request requestPath="{{{listenerRequestPath}}}">
                         <http-transform:body>{{{listenerRequestBody}}}</http-transform:body>
-                        {{/if}}
-                        {{#if (listenerRequestHeaders != null && listenerRequestHeaders != '')}}
                         <http-transform:headers>{{{listenerRequestHeaders}}}</http-transform:headers>
-                        {{/if}}
-                        {{#if (listenerRequestURIParams != null && listenerRequestURIParams != '')}}
                         <http-transform:uri-params>{{{listenerRequestURIParams}}}</http-transform:uri-params>
-                        {{/if}}
-                        {{#if (listenerRequestQueryParams != null && listenerRequestQueryParams != '')}}
                         <http-transform:query-params>{{{listenerRequestQueryParams}}}</http-transform:query-params>
-                        {{/if}}
                     </http-transform:set-requester-request>
                 </when>
             </choice>
             {{/if}}
+            {{#if evaluateInListenerRequest}}
+            <set-payload value="{{{setBeforeListnerPayload}}}" />
+            {{/if}}
             <http-policy:execute-next/>
-            {{#if evaluateInRequesterResponse}}
-            <choice doc:name="requesterResponseChoice" >
-                <when expression="vars.flag">
-                    <http-transform:set-response statusCode="{{{listenerResponseStatusCode}}}">
-                        {{#if (listenerResponseBody != null && listenerResponseBody != '')}}
+            {{#if evaluateInListenerResponse}}
+            <choice>
+                <when expression="#[vars.flg]">
+                    <http-transform:set-response statusCode="{{{listenerResponseStatusCode}}}" reasonPhrase="{{{listenerResponseReasonPhrase}}}">
                         <http-transform:body>{{{listenerResponseBody}}}</http-transform:body>
-                        {{/if}}
-                        {{#if (listenerResponseHeaders != null && listenerResponseHeaders != '')}}
                         <http-transform:headers>{{{listenerResponseHeaders}}}</http-transform:headers>
-                        {{/if}}
                     </http-transform:set-response>
                 </when>
             </choice>
             {{/if}}
+            <logger level="INFO" message="{{{debugLogExpression}}}" />
         </http-policy:source>
-        <http-policy:operation>
+        <http-policy:operation propagateMessageTransformations="{{{evaluateInRequesterResponse}}}">
             {{#if evaluateInRequesterRequest}}
-            <choice doc:name="requesterRequestChoice" >
-                <when expression="vars.flag">
-                    <http-transform:set-requester-request>
-                        {{#if (requesterRequestBody != null && requesterRequestBody != '')}}
+            <choice>
+                <when expression="#[vars.flg]">
+                    <http-transform:set-requester-request requestPath="{{{requesterRequestPath}}}">
                         <http-transform:body>{{{requesterRequestBody}}}</http-transform:body>
-                        {{/if}}
-                        {{#if (requesterRequestHeaders != null && requesterRequestHeaders != '')}}
                         <http-transform:headers>{{{requesterRequestHeaders}}}</http-transform:headers>
-                        {{/if}}
-                        {{#if (requesterRequestURIParams != null && requesterRequestURIParams != '')}}
                         <http-transform:uri-params>{{{requesterRequestURIParams}}}</http-transform:uri-params>
-                        {{/if}}
-                        {{#if (requesterRequestQueryParams != null && requesterRequestQueryParams != '')}}
                         <http-transform:query-params>{{{requesterRequestQueryParams}}}</http-transform:query-params>
-                        {{/if}}
                     </http-transform:set-requester-request>
                 </when>
             </choice>
             {{/if}}
             <http-policy:execute-next/>
             {{#if evaluateInRequesterResponse}}
-            <choice doc:name="requesterResponseChoice" >
-                <when expression="vars.flag">
-                    <http-transform:set-response statusCode="{{{requesterResponseStatusCode}}}">
-                        {{#if (requesterResponseBody != null && requesterResponseBody != '')}}
+            <choice>
+                <when expression="#[vars.flg]">
+                    <http-transform:set-response statusCode="{{{requesterResponseStatusCode}}}" reasonPhrase="{{{requesterResponseReasonPhrase}}}">
                         <http-transform:body>{{{requesterResponseBody}}}</http-transform:body>
-                        {{/if}}
-                        {{#if (requesterResponseHeaders != null && requesterResponseHeaders != '')}}
                         <http-transform:headers>{{{requesterResponseHeaders}}}</http-transform:headers>
-                        {{/if}}
                     </http-transform:set-response>
                 </when>
             </choice>
             {{/if}}
+            <logger level="INFO" message="{{{debugLogExpression}}}" />
         </http-policy:operation>
     </http-policy:proxy>
 </mule> 
